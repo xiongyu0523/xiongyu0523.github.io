@@ -1,0 +1,598 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="HexiWear可穿戴技术原型开发平台
+HexiWear是由mikroelektronika与NXP一起开发的基于MCU的开源IoT与可穿戴原型开发。所有资料包括原理图、PCB设计文件、固件以及App的源码都可以从HexiWear网站或者Github获取。
+
+NOTE: 其中固件的框架和GUI，计步器库等内容值得学习以用于进行二次开发
+
+从系统框图来看，在这个小小的手表空间里包含了7颗NXP芯片，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FTF2016技术峰会上的可穿戴技术 - HexiWear">
+<meta property="og:url" content="http://yoursite.com/2016/10/10/FTF2016技术峰会上的可穿戴技术 - HexiWear/index.html">
+<meta property="og:site_name" content="熊小宇的技术博客">
+<meta property="og:description" content="HexiWear可穿戴技术原型开发平台
+HexiWear是由mikroelektronika与NXP一起开发的基于MCU的开源IoT与可穿戴原型开发。所有资料包括原理图、PCB设计文件、固件以及App的源码都可以从HexiWear网站或者Github获取。
+
+NOTE: 其中固件的框架和GUI，计步器库等内容值得学习以用于进行二次开发
+
+从系统框图来看，在这个小小的手表空间里包含了7颗NXP芯片，">
+<meta property="og:image" content="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/144709502">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3046528-e8651a0c61967879?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/144958509">
+<meta property="og:image" content="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/145411896">
+<meta property="og:updated_time" content="2016-10-10T08:21:20.778Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FTF2016技术峰会上的可穿戴技术 - HexiWear">
+<meta name="twitter:description" content="HexiWear可穿戴技术原型开发平台
+HexiWear是由mikroelektronika与NXP一起开发的基于MCU的开源IoT与可穿戴原型开发。所有资料包括原理图、PCB设计文件、固件以及App的源码都可以从HexiWear网站或者Github获取。
+
+NOTE: 其中固件的框架和GUI，计步器库等内容值得学习以用于进行二次开发
+
+从系统框图来看，在这个小小的手表空间里包含了7颗NXP芯片，">
+<meta name="twitter:image" content="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/144709502">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/10/FTF2016技术峰会上的可穿戴技术 - HexiWear/"/>
+
+  <title> FTF2016技术峰会上的可穿戴技术 - HexiWear | 熊小宇的技术博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">熊小宇的技术博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Since 2016</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                FTF2016技术峰会上的可穿戴技术 - HexiWear
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-10T16:20:21+08:00" content="2016-10-10">
+              2016-10-10
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="HexiWear可穿戴技术原型开发平台"><a href="#HexiWear可穿戴技术原型开发平台" class="headerlink" title="HexiWear可穿戴技术原型开发平台"></a>HexiWear可穿戴技术原型开发平台</h1><hr>
+<p><img src="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/144709502" alt=""><br><a href="http://www.hexiwear.com/" target="_blank" rel="external">HexiWear</a>是由<a href="http://www.mikroe.com/" target="_blank" rel="external">mikroelektronika</a>与<a href="http://www.nxp.com/" target="_blank" rel="external">NXP</a>一起开发的基于MCU的开源IoT与可穿戴原型开发。所有资料包括原理图、PCB设计文件、固件以及App的源码都可以从HexiWear网站或者<a href="https://github.com/MikroElektronika/HEXIWEAR/" target="_blank" rel="external">Github</a>获取。<br><img src="http://upload-images.jianshu.io/upload_images/3046528-e8651a0c61967879?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<blockquote>
+<p><strong>NOTE</strong>: 其中固件的框架和GUI，计步器库等内容值得学习以用于进行二次开发</p>
+</blockquote>
+<p>从系统框图来看，在这个小小的手表空间里包含了7颗NXP芯片，涵盖了MCU主控、BLE无线连接、9轴运动传感器、压力传感器和电源管理功能，除此之外还支持温湿度、环境光传感器和心率传感器。反正能找的传感器都已经支持了，如果能加上GPS就完美了。在印象中也就是Microsoft Band 2（主控似乎是Kinetis K26）有这么多Sensor了。</p>
+<ul>
+<li><a href="http://www.nxp.com/zh-Hans/products/microcontrollers-and-processors/arm-processors/kinetis-cortex-m-mcus/k-series-performance-m4/k6x-ethernet/kinetis-k64-120-mhz-256kb-sram-microcontrollers-mcus-based-on-arm-cortex-m4-core:K64_120" target="_blank" rel="external">Kinetis K64F</a>微控制器（主控）</li>
+<li><a href="http://www.nxp.com/zh-Hans/products/microcontrollers-and-processors/arm-processors/kinetis-cortex-m-mcus/w-series-wireless-m0-plus-m4/kinetis-kw40z-2.4-ghz-dual-mode-ble-and-802.15.4-wireless-radio-microcontroller-mcu-based-on-arm-cortex-m0-plus-core:KW40Z" target="_blank" rel="external">Kinetis KW40Z</a>单芯片BLE与802.15.4多协议无线处理器</li>
+<li><a href="http://www.nxp.com/products/sensors/6-axis-sensors/digital-sensor-3d-accelerometer-2g-4g-8g-plus-3d-magnetometer:FXOS8700CQ?lang_cd=zh-Hans" target="_blank" rel="external">FXOS8700CQ</a>六轴加速度与地磁传感器</li>
+<li><a href="http://www.nxp.com/products/sensors/gyroscopes/3-axis-digital-gyroscope:FXAS21002C?lang_cd=zh-Hans" target="_blank" rel="external">FXAS21002</a>三轴角速度传感器（陀螺仪）</li>
+<li><a href="http://www.nxp.com/products/sensors/pressure-sensors/barometric-pressure-15-to-115-kpa/20-to-110kpa-absolute-digital-pressure-sensor:MPL3115A2?lang_cd=zh-Hans" target="_blank" rel="external">MPL3115A2</a>绝对压力传感器</li>
+<li><a href="http://www.nxp.com/products/power-management/battery-management/battery-chargers/600-ma-single-cell-li-ion-li-polymer-battery-charger:MC34671?lang_cd=zh-Hans" target="_blank" rel="external">MC34671</a>单节锂电池充电管理器</li>
+<li>Kinetis K20<a href="http://www.nxp.com/products/software-and-tools/run-time-software/kinetis-software-and-tools/ides-for-kinetis-mcus/opensda-serial-and-debug-adapter:OPENSDA" target="_blank" rel="external">OpenSDA调试器</a><br><img src="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/144958509" alt=""></li>
+</ul>
+<p>在我看来这个平台最能吸引开发者的是HexiWear能通过Docking板来扩展mikroelektronika提供的上百种<a href="http://www.mikroe.com/click" target="_blank" rel="external">click</a>物联网模块，可用最快的速度进行原型的开发与验证。(mikroelektronika我真是服，编译器，软件，硬件模块什么都能造）<br><img src="http://oeti6csx6.bkt.clouddn.com//blog/2016-10-10/145411896" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/10/FTF2016技术峰会上的可穿戴技术 - NFMI/" rel="next" title="FTF2016技术峰会上的可穿戴技术 - NFMI无线耳塞">
+                <i class="fa fa-chevron-left"></i> FTF2016技术峰会上的可穿戴技术 - NFMI无线耳塞
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/10/FTF2016技术峰会上的可穿戴技术 - NFC支付手表/" rel="prev" title="FTF2016技术峰会上的可穿戴技术 - NFC支付手表">
+                FTF2016技术峰会上的可穿戴技术 - NFC支付手表 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Neo Xiong" />
+          <p class="site-author-name" itemprop="name">Neo Xiong</p>
+          <p class="site-description motion-element" itemprop="description">是时候展现真正的技术了</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HexiWear可穿戴技术原型开发平台"><span class="nav-number">1.</span> <span class="nav-text">HexiWear可穿戴技术原型开发平台</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Neo Xiong</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
