@@ -248,6 +248,110 @@
             
               
                 
+                <a class="post-title-link" href="/2017/02/06/树莓派3B+ Raspbian桌面分辨率设置/" itemprop="url">
+                  树莓派3B+ Raspbian桌面分辨率设置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-06T16:11:24+08:00" content="2017-02-06">
+              2017-02-06
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="查看支持分辨率"><a href="#查看支持分辨率" class="headerlink" title="查看支持分辨率"></a>查看支持分辨率</h1><p>第一次安装了Raspbian后启动系统会模式使用显示器“兼容模式”，这是一个VGA @ 60Hz的设置保证所有的HDMI连接到任何显示设备都能有显示。进入桌面后用户可以通过系统配置文件/boot/config.txt来修改分辨率</p>
+<p>首先启动Shell输入命令查看系统所支持的模式：<br>如果用的是显示器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/opt/vc/bin/tvservice -m DMT</div></pre></td></tr></table></figure></p>
+<p>如果接的是电视：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/opt/vc/bin/tvservice -m CEA</div></pre></td></tr></table></figure></p>
+<p>在我的DELL显示器上给出的列表中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Group DMT has 11 modes:</div><div class="line">          mode 4: 640x480 @ 60Hz 4:3, clock:25MHz progressive</div><div class="line">          mode 6: 640x480 @ 75Hz 4:3, clock:31MHz progressive</div><div class="line">          ...</div><div class="line"> (prefer) mode 82: 1920x1080 @ 60Hz 16:9, clock:148MHz progressive</div><div class="line">          mode 83: 1600x900 @ 60Hz 16:9, clock:108MHz progressive</div></pre></td></tr></table></figure></p>
+<h1 id="选择合适分辨率"><a href="#选择合适分辨率" class="headerlink" title="选择合适分辨率"></a>选择合适分辨率</h1><p>一般选择最优的模式，即1920x1080 @ 60Hz。<br>下面命令修改并确保参数是正确的，CTRL+O 回车保存，CTRL+X退出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo nano /boot/config.txt</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line">#hdmi_safe=1  // 禁止safe模式</div><div class="line">hdmi_group=2  // 1=电视, 2=显示器</div><div class="line">hdmi_mode=82  // 1920x1080@60Hz</div><div class="line">...</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Reboot</div></pre></td></tr></table></figure>
+<h1 id="作死"><a href="#作死" class="headerlink" title="作死"></a>作死</h1><p>手痒试一试选择不支持的分辨率（e.g. mode=3）…果然…黑屏了….</p>
+<p><img src="http://oeti6csx6.bkt.clouddn.com/blog/20170206/172246962.png" alt=""></p>
+<p>也不用担心，默认启动的时候按住SHIFT进入Recovery状态，Edit Config中也可以编辑/boot/config.txt文件，修改回正确数值即可。</p>
+<p><img src="http://oeti6csx6.bkt.clouddn.com/blog/20170206/172319295.png" alt=""></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/10/10/FTF2016技术峰会上的可穿戴技术 - NFC支付手表/" itemprop="url">
                   FTF2016技术峰会上的可穿戴技术 - NFC支付手表
                 </a>
@@ -658,7 +762,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -698,7 +802,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2017</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
