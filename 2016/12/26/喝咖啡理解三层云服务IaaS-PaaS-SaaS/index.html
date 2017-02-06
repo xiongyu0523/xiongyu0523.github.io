@@ -1,0 +1,625 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="思考三层云服务的合理比喻在网上看到一些把三层云服务比喻成吃披萨，开养猪场等例子，相当生动形象。知乎: 谁能举个通俗易懂的例子告诉我IAAS，SAAS，PAAS的区别？ 但有一点似乎都被大家都忽略了，三层云服务所面对的客户是有所区别的。我觉得有必要把比喻打得更加贴切一些。写下自己的理解，从买一杯咖啡开始。
+SaaS：软件即服务 = 开个咖啡店
+SaaS 是 Software as a Servic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="喝咖啡理解三层云服务IaaS/PaaS/SaaS">
+<meta property="og:url" content="http://yoursite.com/2016/12/26/喝咖啡理解三层云服务IaaS-PaaS-SaaS/index.html">
+<meta property="og:site_name" content="熊小宇的技术博客">
+<meta property="og:description" content="思考三层云服务的合理比喻在网上看到一些把三层云服务比喻成吃披萨，开养猪场等例子，相当生动形象。知乎: 谁能举个通俗易懂的例子告诉我IAAS，SAAS，PAAS的区别？ 但有一点似乎都被大家都忽略了，三层云服务所面对的客户是有所区别的。我觉得有必要把比喻打得更加贴切一些。写下自己的理解，从买一杯咖啡开始。
+SaaS：软件即服务 = 开个咖啡店
+SaaS 是 Software as a Servic">
+<meta property="og:image" content="http://oeti6csx6.bkt.clouddn.com/blog/20170206/184229507.jpg">
+<meta property="og:updated_time" content="2017-02-06T11:04:42.687Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="喝咖啡理解三层云服务IaaS/PaaS/SaaS">
+<meta name="twitter:description" content="思考三层云服务的合理比喻在网上看到一些把三层云服务比喻成吃披萨，开养猪场等例子，相当生动形象。知乎: 谁能举个通俗易懂的例子告诉我IAAS，SAAS，PAAS的区别？ 但有一点似乎都被大家都忽略了，三层云服务所面对的客户是有所区别的。我觉得有必要把比喻打得更加贴切一些。写下自己的理解，从买一杯咖啡开始。
+SaaS：软件即服务 = 开个咖啡店
+SaaS 是 Software as a Servic">
+<meta name="twitter:image" content="http://oeti6csx6.bkt.clouddn.com/blog/20170206/184229507.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/26/喝咖啡理解三层云服务IaaS-PaaS-SaaS/"/>
+
+  <title> 喝咖啡理解三层云服务IaaS/PaaS/SaaS | 熊小宇的技术博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">熊小宇的技术博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Since 2016</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                喝咖啡理解三层云服务IaaS/PaaS/SaaS
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-12-26T18:41:43+08:00" content="2016-12-26">
+              2016-12-26
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://oeti6csx6.bkt.clouddn.com/blog/20170206/184229507.jpg" alt=""></p>
+<h1 id="思考三层云服务的合理比喻"><a href="#思考三层云服务的合理比喻" class="headerlink" title="思考三层云服务的合理比喻"></a>思考三层云服务的合理比喻</h1><p>在网上看到一些把三层云服务比喻成吃披萨，开养猪场等例子，相当生动形象。<a href="https://www.zhihu.com/question/21641778" target="_blank" rel="external">知乎: 谁能举个通俗易懂的例子告诉我IAAS，SAAS，PAAS的区别？</a> 但有一点似乎都被大家都忽略了，三层云服务所面对的客户是有所区别的。我觉得有必要把比喻打得更加贴切一些。写下自己的理解，从买一杯咖啡开始。</p>
+<h1 id="SaaS：软件即服务-开个咖啡店"><a href="#SaaS：软件即服务-开个咖啡店" class="headerlink" title="SaaS：软件即服务 = 开个咖啡店"></a>SaaS：软件即服务 = 开个咖啡店</h1><blockquote>
+<p>SaaS 是 <strong>S</strong>oftware <strong>a</strong>s <strong>a</strong> <strong>S</strong>ervice 的缩写</p>
+</blockquote>
+<p>在穿过海岸城广场去往地铁站的路上，一字排开的临街商铺前总热闹非凡。各式各样的门店来满足着消费者的生活需求：</p>
+<ul>
+<li>餐饮</li>
+<li>文化</li>
+<li>教育</li>
+<li>电子产品</li>
+<li>其他…</li>
+</ul>
+<p><strong>SaaS</strong>服务提供商跟这些商铺一样，也是云服务中与终端消费者日常接触的一层，来满足各种不同的应用需求。困了我会买一杯香浓的咖啡，不需要自己选咖啡豆、买咖啡机再翻出各种攻略来研究怎么煮一上壶。同样我有文件要存储共享我会使用云盘，而不是自己建个存储平台再搭个FTP什么的，为了可靠安全的存储我可能会选择一些大公司产品，比如iCloud Drive，所以付点钱也是值得的。</p>
+<p>除了办公、存储、社交、视频这些面向个人消费者的<strong>SaaS</strong>云服务，还有很大一部分是面向企业的SaaS，如Saleforce, GoToMeeting等。如果把企业看做一个消费者，这之间没有什么实质差别。</p>
+<h2 id="角色扮演："><a href="#角色扮演：" class="headerlink" title="角色扮演："></a>角色扮演：</h2><ul>
+<li><strong>SaaS</strong> 提供商：咖啡店及各种商铺</li>
+<li><strong>SaaS</strong> 消费者：普通消费者</li>
+</ul>
+<h1 id="PaaS：平台即服务-运营购物中心"><a href="#PaaS：平台即服务-运营购物中心" class="headerlink" title="PaaS：平台即服务 = 运营购物中心"></a>PaaS：平台即服务 = 运营购物中心</h1><blockquote>
+<p>PaaS 是 <strong>P</strong>latform <strong>a</strong>s <strong>a</strong> <strong>S</strong>ervice 的缩写</p>
+</blockquote>
+<p>看到生意如此火爆，我也打算开个<em>熊小宇の咖啡店</em>。第一步是找铺面，一开始宣传资金和运营经验都是不够的，需要找一个相对成熟商场。而Shopping Mall的运营中心正有我所有需要的东西：</p>
+<ul>
+<li>出租繁华地段的铺面</li>
+<li>合理的空间布局</li>
+<li>相邻商铺间的内容互补分析</li>
+<li>人流量与消费数据分析报告</li>
+<li>饮品相关的品牌和供应渠道</li>
+</ul>
+<p>剩下要做的就是专注于设计自己的店铺，装修和请人干活了。购物中心先租赁或者购买物业的产权，进行品牌包装，整体设计和零售管理，来打造一个一站式的平台，形形色色的商家只要联系购物中心，缴纳租金和服务费就可以开店了。</p>
+<p>云服务中<strong>PaaS</strong>这一层的就像是运营购物中心，<strong>PaaS</strong>提供给做<strong>SaaS</strong>服务的公司的一个基础平台，包括数据库、SDK、部署工具、控制台等等组件或框架，同时也提供行业解决方案与技术咨询&amp;支持。</p>
+<p>如果你的需求只是一杯咖啡，你是不会去跟购物中心打交道的。购物中心面向客户仅是需要开店的商家。同样<strong>PaaS</strong>面向<strong>SaaS</strong>开发者的服务，而<strong>SaaS</strong>则是面向个人或者企业消费者的服务。</p>
+<h2 id="角色扮演：-1"><a href="#角色扮演：-1" class="headerlink" title="角色扮演："></a>角色扮演：</h2><ul>
+<li><strong>PaaS</strong> 提供商：购物中心运营商</li>
+<li><strong>PaaS</strong> 消费者：咖啡店及各种商铺</li>
+</ul>
+<h1 id="IaaS：基础设施即服务-当个地产开发商"><a href="#IaaS：基础设施即服务-当个地产开发商" class="headerlink" title="IaaS：基础设施即服务 = 当个地产开发商"></a>IaaS：基础设施即服务 = 当个地产开发商</h1><blockquote>
+<p>IaaS 是 <strong>I</strong>nfrastructure <strong>a</strong>s <strong>a</strong> <strong>S</strong>ervice 的缩写</p>
+</blockquote>
+<p>开了咖啡店又不满足了，我也希望能开一间小型的购物中心。了解过后知道一个购物中心也不都是从零开始打造的。首先会寻找一个繁华的地段、选择适合的场地建筑和基础设施，和开发商签约，再开始购物中心包装。而这么一个场地的建造则是由地产开发商完成的，包括：</p>
+<ul>
+<li>设计规划</li>
+<li>建筑施工</li>
+<li>水电安装</li>
+<li>管道铺设</li>
+</ul>
+<p>整个工程工期漫长又耗资巨大，一般不是中小公司能玩转的。在基础设施建造完毕后，地产开发商再将毛坯物业出租或者出售给运营购物中心的企业，实现盈利。</p>
+<p><strong>IaaS</strong>跟这地产商建房子相似，提供给消费者的服务是对所有计算基础设施的利用，包括处理CPU/GPU、存储、网络和其它基本的计算资源，以及运行环境所需的操作系统与虚拟化环境。同样重要的一点：<strong>IaaS</strong>的客户是<strong>PaaS</strong>服务商。</p>
+<p>很多时候一些大的服务提供商同时会提供<strong>IaaS</strong>和<strong>PaaS</strong>的服务，比如阿里云和亚马逊AWS。这就像万达广场，除了整体的设计建造是万达集团的同时也自己的Shopping Mall品牌来运营购物中心。</p>
+<h2 id="角色扮演：-2"><a href="#角色扮演：-2" class="headerlink" title="角色扮演："></a>角色扮演：</h2><ul>
+<li><strong>IaaS</strong> 提供商：地产开发商</li>
+<li><strong>IaaS</strong> 消费者：购物中心运营商</li>
+</ul>
+<h1 id="本地部署"><a href="#本地部署" class="headerlink" title="本地部署"></a>本地部署</h1><p>当然，我也可以自己从头开始打造一间咖啡店。买水泥、建房子、装水电、搞装修、买设备、进货、雇员工一切都自己来，这就是本地部署。不过算一笔账，开个咖啡店的成本本来只要二十万，时间一个月。但建房子成本需要一千万，时间两年，并且其中环节诸多，傻子才这么做啊。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/16/第二代蓝牙BLE SoC横向比较/" rel="next" title="第二代蓝牙BLE SoC横向比较">
+                <i class="fa fa-chevron-left"></i> 第二代蓝牙BLE SoC横向比较
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/06/树莓派3B+ Raspbian桌面分辨率设置/" rel="prev" title="树莓派3B+ Raspbian桌面分辨率设置">
+                树莓派3B+ Raspbian桌面分辨率设置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Neo Xiong" />
+          <p class="site-author-name" itemprop="name">Neo Xiong</p>
+          <p class="site-description motion-element" itemprop="description">是时候展现真正的技术了</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#思考三层云服务的合理比喻"><span class="nav-number">1.</span> <span class="nav-text">思考三层云服务的合理比喻</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SaaS：软件即服务-开个咖啡店"><span class="nav-number">2.</span> <span class="nav-text">SaaS：软件即服务 = 开个咖啡店</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#角色扮演："><span class="nav-number">2.1.</span> <span class="nav-text">角色扮演：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PaaS：平台即服务-运营购物中心"><span class="nav-number">3.</span> <span class="nav-text">PaaS：平台即服务 = 运营购物中心</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#角色扮演：-1"><span class="nav-number">3.1.</span> <span class="nav-text">角色扮演：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IaaS：基础设施即服务-当个地产开发商"><span class="nav-number">4.</span> <span class="nav-text">IaaS：基础设施即服务 = 当个地产开发商</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#角色扮演：-2"><span class="nav-number">4.1.</span> <span class="nav-text">角色扮演：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#本地部署"><span class="nav-number">5.</span> <span class="nav-text">本地部署</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Neo Xiong</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.0.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
