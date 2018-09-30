@@ -248,6 +248,363 @@
             
               
                 
+                <a class="post-title-link" href="/2018/09/30/深入NXP低功耗蓝牙SDK开发系列-编程框架剖析/" itemprop="url">
+                  深入NXP低功耗蓝牙SDK开发系列 - 编程框架剖析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2018-09-30T10:09:39+08:00" content="2018-09-30">
+              2018-09-30
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>很久没有更新技术博客了。最近一年都在做低功耗蓝牙和物联网等相关的事情，想把一些经验和心得写成博客分享出来，也算对自己工作的一种总结。开一个系列讲解NXP的低功耗蓝牙SDK开发的方方面面，目前NXP官方仅有一个英文版的《BLE Application Developer Guide》介绍SDK的使用，对于国内开发者来说不太友好。希望这个系列文章能作为官方文档的补充，帮助到正在使用和将要使用NXP蓝牙的芯片的朋友们。</p>
+<p>weil家深入这个通用的低功耗蓝牙SDK与协议栈，迅速掌握NXP低功耗蓝牙的开发。假设用户已经具备了基本的BLE概念，如Profile、GAP、GATT、HCI、LL等各个层次的职责，广播与连接的行为，基于GATT数据传输的方式等。如果读者对这个概念还不熟悉，可以阅读《Getting Started with Bluetooth Low Energy》一书的第1至3章共75页内容，利用业余时间在2-3天内可以轻松完成。</p>
+<h1 id="NXP-BLE-SoC概况"><a href="#NXP-BLE-SoC概况" class="headerlink" title="NXP BLE SoC概况"></a>NXP BLE SoC概况</h1><p>目前NXP面向物联网和可穿戴设备数据传输应用的BLE SoC芯片要有QN和KW两大系列（型号特点见下表），除了QN902x使用原Quintic自带的协议栈SDK外，其他几个型号都采用了NXP MCUXpresso SDK和NXP自研的Bluetooth协议栈，呈现给用户的编程接口完全一致。无论是开发超低功耗的QN9080，支持Zigbee/Thread/BLE多模的KW41，还是面向汽车应用的KW36，对固件工程师来说，掌握了一款芯片的开发，拿下其他的也就是轻而易举之事。<br>型号| 协议版本| 内核频率 | 存储器资源 | 特色<br>———-|—————|—–|—————|—–<br><strong>QN902x</strong>   | BLE 4.2| Cortex-M0 @32MHz | 128KB Flash / 64KB RAM / 128KB ROM | 低成本<br><strong>QN908x</strong>   | BLE 5.0 | Cortex-M4F @32MHz |  512KB Flash / 128KB RAM | 超低功耗<br><strong>KW41</strong>   | BLE 4.2 | Cortex-M0+ @48MHz | 512KB Flash / 128KB RAM | 多模多协议<br><strong>KW36</strong>   | BLE 5.0 | Cortex-M0+ @48MHz | 512KB Flash / 64KB RAM | 汽车网络<br><strong>K32W</strong> | BLE 5.0 | Cortex-M4F &amp; Cortex-M0+ @72MHz | 1.25MB Flash / 384KB RAM | 单芯片高集成度</p>
+<h1 id="MCUXpresso-SDK与NXP-BLE协议栈"><a href="#MCUXpresso-SDK与NXP-BLE协议栈" class="headerlink" title="MCUXpresso SDK与NXP BLE协议栈"></a>MCUXpresso SDK与NXP BLE协议栈</h1><p>MCUXpresso SDK是NXP面向MCU市场推出的一套完整的软件开发套件，支持Kinetis, LPC, i.MX RT等通用微控制器以及QN和JN系列的无线连接微控制器。一个SDK包内包含了芯片硬件抽象层，外设驱动库，多个中间件库（根据芯片功能的不同包含不同的中间件，比如带Ethernet外设的MCU则会有lwip网络协议栈中间件），以及丰富的示例代码。</p>
+<p>对于低功耗蓝牙MCU，它的BLE协议栈作为MCUXpresso SDK的一个中间件而存在。在用户解压缩SDK包后，在./middleware/wireless/bluetooth_x.y.z下可以找到协议栈的代码和库文件。低功耗蓝牙应用将包含这个目录下的文件，以使用协议栈提供的API和服务。所有低功耗蓝牙的示例代码可以再./boards/<specific board="">/wireless_examples/bluetooth目录下找到。同时，低功耗蓝牙应用与通用MCU SDK还有一点差异，它需要一些额外的通用组件作为支撑，如OS环境抽象、非易失存储、队列管理，低功耗管理等，因此多引入了一个connectivity framework的中间件层。在./middleware/wireless/framework_x.y.z下可以找到framework包含的所有功能模块源代码。下图展示了SDK的文件结构中与低功耗蓝牙相关的目录。</specific></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3046528-12d71b1b39f7c434.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MCUXpresso SDK文件目录组织"></p>
+<blockquote>
+<p>如果基于MCUXpresso IDE开发，通常会导出某个示例工程到workspace目录下，被导出的工程与解压缩后的SDK的layout稍有不同，它仅包含了该示例代码所需的驱动和中间件，并以一个平铺的方式组织文件夹，但文件夹下的内容并无区别。</p>
+</blockquote>
+<h1 id="NXP-BLE-SDK系统架构"><a href="#NXP-BLE-SDK系统架构" class="headerlink" title="NXP BLE SDK系统架构"></a>NXP BLE SDK系统架构</h1><p>NXP提供了一套完整的BLE协议栈和编程框架，并已通过了Bluetooth Core Spec 5.0的认证。用户第一次开发自己的应用时，应当先大致了解整个系统的组成，知道每个部分的职责，分别有哪些文件。有了一些基础，再通过查询API文档，很快便能掌握BLE应用开发。下图为BLE SDK总体的框架图，图中使用了几种不同的颜色来区分：</p>
+<ul>
+<li>应用（灰）</li>
+<li>低功耗蓝牙服务框架（黄）</li>
+<li>Connectivtiy Framework（绿）</li>
+<li>BLE协议栈（蓝）</li>
+<li>通用SDK（白）</li>
+</ul>
+<p><img src="https://upload-images.jianshu.io/upload_images/3046528-235744c5fc0a161b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="NXP BLE SDK系统架构"></p>
+<h2 id="OSA"><a href="#OSA" class="headerlink" title="OSA"></a>OSA</h2><p>OSA属于Connectivity Framework，单独介绍它是因为OSA服务于整个SDK和协议栈，并且也是系统复位后的入口。整个蓝牙协议栈和SDK的设计使用了RTOS下才有的多任务，消息和事件等服务。为了减少代码大小和栈的内存，适配一些资源紧张的SoC，在设计时才引入了OSA。</p>
+<p>OSA提供一套接口封装，底层可以使用FreeRTOS或者Bare Metal前后台两种实现。如果底层为FreeRTOS，OSA只是简单的将FreeRTOS API转换为OSA API。如果底层底层为Bare Metal系统，OSA则内部实现了一套多任务、信号量、事件等RTOS API的模拟实现，当用户调用OSA_Start启动多任务调度环境时，实际上是陷入了一个while(1)的循环，在这个循环中会不断的检查任务队列的状态并选择优先级最高的任务来运行，这些任务之间无法抢占，因此每个任务的设计需要额外小心，占用CPU的时间最好不要超过2ms，以确保处理BLE事件的任务能及时得到调度。在编写OSA的任务代码时，有几个不同与一般RTOS的地方需要注意。</p>
+<ul>
+<li>任务体while(1)循环的最后需要加上一个条件判断，如果是gUseRtos_c==0，则直接跳出循环，相当于每次任务只执行一次。</li>
+<li>任务体while(1)循环之前的初始化工作需要特殊化处理，定义一个静态或者全局变量initailized的，并对它进行测试，确保在当OSA运行在Bare Metal配置时，这些初始化代码仅会运行一次。</li>
+<li>OSA_EventWait, OSA_SemphoreWait, OSA_MutexLock等函数在OSA的FreeRTOS实现时会阻塞任务，而在Bare Metal实现中，调用这些API不会阻塞，而是通过内部一个状态机来检测资源，如果资源目前是不可获得状态，则直接返回。</li>
+<li>OSA_TimeDelay函数在BM实现时是不会切换到其他任务运行的，而是在原地等待直到超时。</li>
+</ul>
+<p>OSA的源码可以在实现./middleware/wireless/framework_x.y.z/OSAbstraction下找到，如感兴趣可以深入研读。</p>
+<blockquote>
+<p>SDK提供的每一份BLE示例代码中都提供了freertos和bm两个工程。</p>
+</blockquote>
+<h2 id="Connectivity-Framework"><a href="#Connectivity-Framework" class="headerlink" title="Connectivity Framework"></a>Connectivity Framework</h2><p>Connectivity Framework包含了众多的子模块，服务于应用和BLE协议栈。本系列文章将会抽取其中几个比较重要的几个子模块作为单独的文章来分析。本文希望先给读者一个总体概念，通过表格列出了各个模块的职责和必要性。标注为“必要”的模块如果缺失，最后整个BLE工程构建将会失败，说明该模块已被协议栈或者其他的代码引用了。标注为“非必要”的模块目的是服务应用层，如果用户的应用不需要这个功能，则可以移除。</p>
+<table>
+<thead>
+<tr>
+<th>子模块</th>
+<th>职责</th>
+<th>必要性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FunctionLib</strong></td>
+<td>memcpy等标准函数的封装</td>
+<td>必要</td>
+<td>通过头文件配置选择私有实现或直接使用C库</td>
+</tr>
+<tr>
+<td><strong>List</strong></td>
+<td>通用双向链表实现</td>
+<td>必要</td>
+<td>List是MemManager和Messaging的基础</td>
+</tr>
+<tr>
+<td><strong>MemManager</strong></td>
+<td>基于块的内存分配</td>
+<td>必要</td>
+<td>协议栈所需的动态内存都从这里分配</td>
+</tr>
+<tr>
+<td><strong>Messaging</strong></td>
+<td>消息队列服务</td>
+<td>必要</td>
+<td>不具备任务同步功能，需配合OSA Event使用</td>
+</tr>
+<tr>
+<td><strong>OSAbstraction</strong></td>
+<td>提供操作系统服务抽象</td>
+<td>必要</td>
+<td>整个系统调度都依赖于OSA</td>
+</tr>
+<tr>
+<td><strong>TimersManager</strong></td>
+<td>提供软定时服务</td>
+<td>必要</td>
+<td>协议栈超时机制需要使用到</td>
+</tr>
+<tr>
+<td><strong>SecLib</strong></td>
+<td>封装SMP加密操作</td>
+<td>必要</td>
+<td>部分芯片可以选择使用硬件加密加速引擎</td>
+</tr>
+<tr>
+<td><strong>LowPower</strong></td>
+<td>实现低功耗管理</td>
+<td>非必要</td>
+<td>仅当系统需要使用低功耗时用到</td>
+</tr>
+<tr>
+<td><strong>OtaSupport</strong></td>
+<td>提供OTA服务</td>
+<td>非必要</td>
+<td>仅包含OTA的应用需要用到</td>
+</tr>
+<tr>
+<td><strong>SerialsManager</strong></td>
+<td>提供不同串行通讯链路层的封装</td>
+<td>非必要</td>
+<td>当配置协议栈为DTM模式或Host Only模式时需要）</td>
+</tr>
+<tr>
+<td><strong>Flash</strong></td>
+<td>对不同芯片内部和外部Flash操作的封装</td>
+<td>非必要</td>
+<td>当包括NVM模块时为必要</td>
+</tr>
+<tr>
+<td><strong>NVM</strong></td>
+<td>在Flash上提供一套非易失存储机制</td>
+<td>非必要</td>
+<td>仅当系统需要用到Bonding时才为必要</td>
+</tr>
+<tr>
+<td><strong>MWS</strong></td>
+<td>多协议共存协议</td>
+<td>非必要</td>
+<td>当需要与外部WLAN芯片配</td>
+</tr>
+<tr>
+<td><strong>Shell</strong></td>
+<td>提供控制台交互和格式化打印功能</td>
+<td>非必要</td>
+<td>服务于应用程序</td>
+</tr>
+<tr>
+<td><strong>GPIO/LED/Keyboard</strong></td>
+<td>提供简单输入输出能力</td>
+<td>非必要</td>
+<td>服务于应用程序</td>
+</tr>
+<tr>
+<td><strong>Reset/Panic/RNG</strong></td>
+<td>对系统各个功能的简单封装</td>
+<td>非必要</td>
+<td>服务于应用程序</td>
+</tr>
+</tbody>
+</table>
+<h2 id="BLE协议栈"><a href="#BLE协议栈" class="headerlink" title="BLE协议栈"></a>BLE协议栈</h2><p>BLE协议栈以闭源库的形式提供，分为Host和Controller两部分。下图描述了组成Stack的主要文件和相互之间的依赖关系。<img src="https://upload-images.jianshu.io/upload_images/3046528-6ee1bc76b46d5359.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<p>Controller Stack负责与硬件和时序相关的蓝牙链路层处理，它通过HCI接口与Host Stack进行协同工作完成BLE数据交互。由于使用BLE SDK时几乎不需要直接与Controller Stack打交道，我们知道它的存在即可。</p>
+<p>Host Stack是一个与硬件无关的C库，它通过HCI接口向Controller Stack发送命令和接收消息，负责完成Bluetooth Core Spec中的L2CAP, ATT, SM, GATT, GAP等多个层次职责。Host Stack通过一组头文件暴露出协议栈各个层的API和回调事件接口，理解Host Stack提供的服务和数据结构对于掌握BLE SDK开发至关重要。本系列专题将以独立文章分享各个部分服务的具体应用，这里先将协议栈的两类主要接口介绍给大家。</p>
+<ol>
+<li><p>API<br>API即应用程序编程接口，是外部应用主动向协议栈发起请求的入口。协议栈所提供的绝大部分API都是异步的，利用Messaging消息队列向协议栈的Host任务发送一条后便返回。实际的处理是在Host任务中完成，再通过某个注册的callback回调函数来反馈执行的结果。</p>
+</li>
+<li><p>Callback注册回调函数<br>Callback注册回调函数是由应用程序提供的一个钩子函数，在协议栈内部处理中如果有需要通知到用户层事件发生或者数据变化时，将调用注册的钩子函数通知应用程序做出响应动作。</p>
+</li>
+</ol>
+<p>下面一段示例代码演示了Gap_Connect()和Gap_Disconnect()两个异步API的行为和他们所触发的callback回调函数后对应事件的响应。通过这段代码可以大致了解应用代码如何与协议栈进行交互。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">// 1. initiate API to request and connection and register a callback</div><div class="line">bleResult_t rt;</div><div class="line">rt = Gap_Connect(&amp;gConnReqParams, Gap_ConnectionCallback);</div><div class="line">if (rt != gBleSuccess_c) &#123;</div><div class="line">    printf(&quot;Gap_Connect API fail, reason = %d\r\n&quot;, rt);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// when PC(R15) arrives here, the connection may NOT be setup</div><div class="line">... </div><div class="line"></div><div class="line">// 2. initiate API to request a disconnection action.</div><div class="line">rt = Gap_Disconnect(peerDeviceId);</div><div class="line">if (rt != gBleSuccess_c) &#123;</div><div class="line">    printf(&quot;Gap_Disconnect fail, reason = %d\r\n&quot;, rt);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// when PC(R15) arrives here, the connection may NOT be disconnected</div><div class="line">... </div><div class="line"></div><div class="line">// 3. Event will be triggered when connection and disconnection happens</div><div class="line">void Gap_ConnectionCallback(deviceId_t peerDeviceId, gapConnectionEvent_t* pConnectionEvent)</div><div class="line">&#123;</div><div class="line">    switch (pConnectionEvent-&gt;eventType)</div><div class="line">    &#123;</div><div class="line">        case gConnEvtConnected_c:</div><div class="line">            // async event to notify that link is connected</div><div class="line">            printf(&quot;Connected to device (%d)\r\n&quot;, peerDeviceId);</div><div class="line">            break;</div><div class="line">           </div><div class="line">        case gConnEvtDisconnected_c:</div><div class="line">             // async event to notify that link is disconnected</div><div class="line">            printf(&quot;Disconnected to device (%d)\r\n&quot;, peerDeviceId);</div><div class="line">            break;</div><div class="line">            ...</div></pre></td></tr></table></figure>
+<h2 id="低功耗蓝牙服务框架"><a href="#低功耗蓝牙服务框架" class="headerlink" title="低功耗蓝牙服务框架"></a>低功耗蓝牙服务框架</h2><p>低功耗蓝牙服务框架这个名称是笔者取给SDK中非协议栈部分的蓝牙代码取一个名字，涉及内容主要包括有HCI、FSCI、Profiles、Connection Manager, Service Discovery, App Thread, BLE Initialization, Stack Runtime Environment等几个部分，顾名思义是这些代码都是为实现BLE应用而服务的，目的是简化用户开发的难度。</p>
+<ul>
+<li><strong>Stack Runtime Environment</strong> </li>
+</ul>
+<p>上一小节介绍的Host和Controller协议栈库提供的是一组可链接的符号，需要外部创建任务以提供运行时环境和创建必要的队列和事件资源，这就是Stack Runtime Environment的职责。协议栈提的了两个任务处理函数Host_TaskHandler()和Controller_TaskHandler()，分别在创建的Host_task和Controller_task里调用。另外任务处理函数还需要用到队列和事件资源，用户任务与Host_task交互、以及Host_task与Controller_task的交互都依赖于他们。下表说明了所创建资源的用途。</p>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>类别</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>gApp2Host_TaskQueue</strong></td>
+<td>消息队列</td>
+<td>用户任务调用Host Stack API时，向这个队列插入一个请求</td>
+</tr>
+<tr>
+<td><strong>gHci2Host_TaskQueue</strong></td>
+<td>消息队列</td>
+<td>Controller Taskdan产生HCI事件时，向这个队列插入一个请求</td>
+</tr>
+<tr>
+<td><strong>gHost_TaskEvent</strong></td>
+<td>OSA事件</td>
+<td>用于通知Host Stack队列中有新的消息插入</td>
+</tr>
+<tr>
+<td><strong>mControllerTaskEvent</strong></td>
+<td>OSA事件</td>
+<td>Host Task向Controller Task发送HCI命令时或中断向Controller Task请求服务</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>App Thread</strong></li>
+</ul>
+<p>App Thread是在系统启动后由OSA创建的第一个任务，它在完成BLE系统初始化后创建了一个应用后台，主要目的是服务Host stack触发的各类callback回调事件。通过Host_stack提供的Registeration API注册的回调函数被调用的上下文都是前面介绍的Host task里，如果在这些callback做一些耗时较长的用户动作（比如上面的printf打印输出），Host task其他部分会得不到响应，从而影响BLE协议交互。因此很有必要将这些callback回调事件的处理放到一个相对低优先级任务中，这个任务就是App Thread。首先Applmain.c中对Host stack提供的回调函数接口都做了实现，这些实现并不作实际处理，而是转发一个消息到App Thread。App Thread一直处于等待事件的状态，收到事件后再分发到各个自定义的callback中作相应处理。App Thread同时还可以通过等待另外一个队列来接收其他任务发送的Application消息并处理，以方便用户实现类似于协议栈的异步处理机制。下表列出了App Thread的队列和时间资源以及他们的用途。</p>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>类别</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>mHostAppInputQueue</strong></td>
+<td>消息队列</td>
+<td>Host Stack产生的callback里将向这个队列插入一个请求</td>
+</tr>
+<tr>
+<td><strong>mAppCbInputQueue</strong></td>
+<td>消息队列</td>
+<td>App Thread本身或者其他用户任务都可以向这个队列插入一个请求</td>
+</tr>
+<tr>
+<td><strong>mAppEvent</strong></td>
+<td>OSA事件</td>
+<td>用于通知App Thread有队列里有新的消息插入</td>
+</tr>
+</tbody>
+</table>
+<p>下面代码段以App_Connect为例来展示了代码是如何通过App Thread来处理Host stack回调函数的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">// User call App_Connect, instead of Gap_Connect</div><div class="line">bleResult_t App_Connect(gapConnectionRequestParameters_t*   pParameters,</div><div class="line">                        gapConnectionCallback_t             connCallback)</div><div class="line">&#123;</div><div class="line">    pfConnCallback = connCallback;</div><div class="line">    return Gap_Connect(pParameters, App_ConnectionCallback);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Simplified App_ConnectionCallback, the function insert a message and notify App Thread</div><div class="line">void App_ConnectionCallback (deviceId_t peerDeviceId, gapConnectionEvent_t* pConnectionEvent)</div><div class="line">&#123;</div><div class="line">    appMsgFromHost_t *pMsgIn = NULL;   </div><div class="line">    uint8_t msgLen = GetRelAddr(appMsgFromHost_t, msgData) + sizeof(connectionMsg_t);</div><div class="line">    </div><div class="line">    pMsgIn = MSG_Alloc(msgLen);</div><div class="line">    // use Applmain defined message type</div><div class="line">    pMsgIn-&gt;msgType = gAppGapConnectionMsg_c; </div><div class="line">    pMsgIn-&gt;msgData.connMsg.deviceId = peerDeviceId;</div><div class="line"></div><div class="line">    FLib_MemCpy(&amp;pMsgIn-&gt;msgData.connMsg.connEvent, pConnectionEvent, sizeof(gapConnectionEvent_t));</div><div class="line">    MSG_Queue(&amp;mHostAppInputQueue, pMsgIn);</div><div class="line">    OSA_EventSet(mAppEvent, gAppEvtMsgFromHostStack_c);  </div><div class="line">&#125;</div><div class="line"></div><div class="line">// Pseduo code of App_Thread</div><div class="line">void App_Thread (uint32_t param)</div><div class="line">&#123;</div><div class="line">    while(1) &#123;</div><div class="line">        OSA_EventWait(mAppEvent, osaEventFlagsAll_c, FALSE, osaWaitForever_c , &amp;event);</div><div class="line"></div><div class="line">        if (event &amp; gAppEvtMsgFromHostStack_c) &#123;</div><div class="line">            while (MSG_Pending(&amp;mHostAppInputQueue))  &#123;</div><div class="line">                pMsgIn = MSG_DeQueue(&amp;mHostAppInputQueue);</div><div class="line">                // check msgType and dispatch callback handler</div><div class="line">                if (pMsg-&gt;msgType == gAppGapConnectionMsg_c) &#123;</div><div class="line">                    pfConnCallback(pMsg-&gt;msgData.connMsg.deviceId, &amp;pMsg-&gt;msgData.connMsg.connEvent);</div><div class="line">                &#125; else if (pMsg-&gt;msgType == ...) &#123;</div></pre></td></tr></table></figure>
+<p>通过下图可以全面的了解到App Thread, Host task和Controller task三者之间是如何完成交互的。掌握了这张图的消息交互流程，开发基于NXP BLE SDK的应用也就变的非常容易了。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/3046528-25f19bfac57e57a3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ky"></p>
+<ul>
+<li><p><strong>HCI</strong><br>HCI是低功耗蓝牙Controller协议栈和Host协议栈之间的沟通桥梁，对于SoC，两个协议栈都运行在同一芯片上，这部分功能实际上是简单的函数调用。当BLE SDK被配置为只作为controller Only模式（用于DTM），或者Host Only模式（controller使用另外一颗芯片）时，HCI的就需要与通过SerialManager来完成与外界通讯。</p>
+</li>
+<li><p><strong>FSCI</strong><br>FSCI是<strong>F</strong>ramework <strong>S</strong>erial <strong>C</strong>ommunication <strong>I</strong>nterface的缩写，该模块定义了一套统一的接口将无线通讯微控制器（BLE，Thread，Zigbee）所提供的服务提供给另外一颗主处理器或者PC系统。对于BLE SoC而言，片上运行了完整的BLE Host和Controller协议栈，此时处于Network Processor网络处理器模式。外部处理器在只需要遵循FSCI协议便能控制SoC发起广播、建立连接和进行数据交换。</p>
+</li>
+<li><p><strong>Profiles</strong><br>在GATT之上，Bluetooth SIG定义了多个标准的GATT based Profile帮助应用层互联互通，同时每个厂家也会定义一些简单的私有Profile来实现raw数据传输、OTA等功能。由于所有的Callback回调事件处理都是在应用中完成的，Profile在NXP BLE SDK中职责比较简单，主要负责完成Profile数据到GATT数据库的操作转换。</p>
+</li>
+<li><p><strong>Conneciton Manager</strong> 与 <strong>Service Discovery</strong><br>连接建立和服务发现是每个BLE应用都需要经历的过程，BLE SDK将这部分通用的代码从应用层分离了出来，形成两对独立的.c/.h文件ble_conn_manager.c/h和ble_service_discovery.c/h。这样减少了应用层重复的代码，提高代码可维护性。这两个部分服务的功能在后面介绍蓝牙SDK具体编程的文章中都会有所涉及。</p>
+</li>
+<li><p><strong>GATT Database</strong><br>通过一套宏定义的方法，完成静态或者动态GATT数据库的建立。第一次看到gatt_db.h会很难以理解里面的特殊格式，但要是“照猫画虎”的增加自己的service或者characeteristic还是比较简单的，这就是它的神奇之处。写一篇文章专门讲解gatt_db模块到底是如何通过一系列的宏定义来成这个工作的。</p>
+</li>
+</ul>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><p>BLE SDK的每个应用示例都包含了十分类似的应用层文件，下表简单描述了各个文件的职责。其中<user_app>.c/h是整个应用的核心。</user_app></p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>app_config.c</strong></td>
+<td>BLE广播参数、扫描参数、安全性相关的配置</td>
+</tr>
+<tr>
+<td><strong>app_preinclude.h</strong></td>
+<td>全局参数配置文件（其他文件不需要include此文件，在IDE里已配置）</td>
+</tr>
+<tr>
+<td><strong>gatt_db.h</strong></td>
+<td>GATT database描述文件</td>
+</tr>
+<tr>
+<td><strong>gatt_uuid128.h</strong></td>
+<td>私有128位UUID描述文件</td>
+</tr>
+<tr>
+<td><strong><user_app>.c/h</user_app></strong></td>
+<td>应用示例代码，如heart_rate_sensor.c，广播发起、扫描，以及各种BLE协议栈事件的处理</td>
+</tr>
+</tbody>
+</table>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>本文从零开始介绍NXP BLE SDK系统架构，逐步分析了各个子模块的功能。对于BLE协议栈和服务框两部分作了较为细致的讲解，以帮助大家了解自己编写的应用是如何与框架进行交互的。本文是《深入NXP低功耗蓝牙SDK开发系列》的第一篇，涵盖内容较广。如果您觉得其中某部分功能的介绍太过简单，不要心急，留言给我，后续会有多篇文章一步步教大家如何上手BLE SDK开发，敬请期待吧：）。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2017/02/06/树莓派3B+ Raspbian桌面分辨率设置/" itemprop="url">
                   树莓派3B+ Raspbian桌面分辨率设置
                 </a>
@@ -617,141 +974,6 @@
               
                 
                 <a class="post-title-link" href="/2016/10/11/电容器与水桶的类比/" itemprop="url">
-                  电容器与水桶的类比
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-10-11T18:39:10+08:00" content="2016-10-11">
-              2016-10-11
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="第一部分：电容器的电容C的【定义式】和【决定式】"><a href="#第一部分：电容器的电容C的【定义式】和【决定式】" class="headerlink" title="第一部分：电容器的电容C的【定义式】和【决定式】"></a>第一部分：电容器的电容C的【定义式】和【决定式】</h1><hr>
-<h2 id="平行板电容器电容C的【定义式】"><a href="#平行板电容器电容C的【定义式】" class="headerlink" title="平行板电容器电容C的【定义式】"></a>平行板电容器电容C的【定义式】</h2><p>电容器所存储电荷量Q与两端电压U的比值为电容器的电容C，即 </p>
-<blockquote>
-<p>C = Q / U</p>
-</blockquote>
-<p>表示当存储1Q的电荷量时若电压为1V，那么电容为1F。</p>
-<p>上述定义式仅表示在电路中量度该物理量的一种方法，我们不可以说”平行板电容器的电容C跟两板间所带的电荷量Q成正比，跟两板间的电压U成反比”。因为电容器的电容C是客观存在的，当两板不带电时，电容C依然存在。它的大小有【决定式】来决定。</p>
-<h2 id="平行板电容器电容C的【决定式】"><a href="#平行板电容器电容C的【决定式】" class="headerlink" title="平行板电容器电容C的【决定式】"></a>平行板电容器电容C的【决定式】</h2><p>决定式就是表示该物理量的大小都与哪些因素有关系，通常是由其物理特性决定的，与所连接电路无关。对于电容器的电容C来说：</p>
-<blockquote>
-<p>C = εrS / 4πkd              </p>
-</blockquote>
-<p>其中k为静电力常量，库仑定律中的 k = 1 / (4πε0)，代入上面公式也可以得到更为简洁的公式：</p>
-<blockquote>
-<p>C = εrε0S / d</p>
-</blockquote>
-<p>ε0是真空介电常数，等于8.854187818 x 10-12 F/m<br>εr为平板电容器绝缘材料的相对介电常数，跟材料有关系，它没有量纲。εr越大，电容C越大<br>S为平行板正对面积。S越大，电容C越大<br>d为平行板之间的距离。d约大，电容C越小</p>
-<h1 id="第二部分：电容器与水桶的类比"><a href="#第二部分：电容器与水桶的类比" class="headerlink" title="第二部分：电容器与水桶的类比"></a>第二部分：电容器与水桶的类比</h1><hr>
-<p>电容器类比于水桶的概念，有助于快速理解电容器在电路中任一时刻电容C、电压U、电荷Q三者的关系。</p>
-<p>根据电容器电容C的定义式得到：</p>
-<blockquote>
-<p>电荷Q = 电容C * 电压U</p>
-</blockquote>
-<p>对于水桶：</p>
-<blockquote>
-<p>水的体积V = 底面积S * 水面高度H</p>
-</blockquote>
-<p>我们可以做以下类比：</p>
-<ul>
-<li>电容C大小类比于水桶的底面积S（两者都是造出来以后就固定了）。</li>
-<li>电容器两端的电压U类比于水面高度H（注意，是水面的高度，不是桶的高度，放水的多少不同，水面高度是有变化的）。</li>
-<li>电容器存储的电荷Q类比于水桶内水的体积V。</li>
-<li>电容器的极限耐压值Umax类比于水桶的高度Hmax。</li>
-</ul>
-<p>进一步来理解和验证以上的类比否合理：</p>
-<ul>
-<li>同样电荷Q向不同的电容器充电，电容C越大电容器，电压U越小。类比到水桶，同样体积的水V倒入不同的水桶里，底面积S越大的桶子，水面高度H越小。</li>
-<li>某一电容器，当有更多的电荷Q注入，电压U就会越来越高，直到达到电容器的极限耐压值Umax。类比到水桶，某一水桶，只有更多体积的水V倒入，水面高度H就会不断上升，直到达到水桶的高度Hmax。</li>
-<li><p>电容器可以容纳的最大电荷Qmax是指两端电压U达到极限耐压值时的值： Qmax = C * Umax<br>类比到水桶，一个水桶可以盛水的最大水的体积Vmax是指当水面高度H达到水桶高度时的值：Vmax= S * Hmax</p>
-</li>
-<li><p>平时我们说电容器充满了，是指在电容器两端的电压等于了外部电源电压，没有电势差之后，外部电源自然无法再向电容器充电。这时两者电压相同，C大的，所能存储的如果能进一步提高外部电压，电容器两端的电压U还可以继续升高直至极限耐压值Umax。类比到水桶，我们假设有两个水桶，两者底部是互通的。当水桶A（相当于电压源，也可以理解为电容器向电容器充电）的水面高度H比水桶B（相当于电容器）高时，水会从水桶A注入到水桶B中，直到两者的水面高度相同时停止。</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/10/11/深入NXP低功耗蓝牙SDK开发系列 - 编程框架剖析/" itemprop="url">
                   电容器与水桶的类比
                 </a>
               
