@@ -616,6 +616,141 @@
             
               
                 
+                <a class="post-title-link" href="/2016/10/11/深入NXP低功耗蓝牙SDK开发系列 - 编程框架剖析/" itemprop="url">
+                  电容器与水桶的类比
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-11T18:39:10+08:00" content="2016-10-11">
+              2016-10-11
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="第一部分：电容器的电容C的【定义式】和【决定式】"><a href="#第一部分：电容器的电容C的【定义式】和【决定式】" class="headerlink" title="第一部分：电容器的电容C的【定义式】和【决定式】"></a>第一部分：电容器的电容C的【定义式】和【决定式】</h1><hr>
+<h2 id="平行板电容器电容C的【定义式】"><a href="#平行板电容器电容C的【定义式】" class="headerlink" title="平行板电容器电容C的【定义式】"></a>平行板电容器电容C的【定义式】</h2><p>电容器所存储电荷量Q与两端电压U的比值为电容器的电容C，即 </p>
+<blockquote>
+<p>C = Q / U</p>
+</blockquote>
+<p>表示当存储1Q的电荷量时若电压为1V，那么电容为1F。</p>
+<p>上述定义式仅表示在电路中量度该物理量的一种方法，我们不可以说”平行板电容器的电容C跟两板间所带的电荷量Q成正比，跟两板间的电压U成反比”。因为电容器的电容C是客观存在的，当两板不带电时，电容C依然存在。它的大小有【决定式】来决定。</p>
+<h2 id="平行板电容器电容C的【决定式】"><a href="#平行板电容器电容C的【决定式】" class="headerlink" title="平行板电容器电容C的【决定式】"></a>平行板电容器电容C的【决定式】</h2><p>决定式就是表示该物理量的大小都与哪些因素有关系，通常是由其物理特性决定的，与所连接电路无关。对于电容器的电容C来说：</p>
+<blockquote>
+<p>C = εrS / 4πkd              </p>
+</blockquote>
+<p>其中k为静电力常量，库仑定律中的 k = 1 / (4πε0)，代入上面公式也可以得到更为简洁的公式：</p>
+<blockquote>
+<p>C = εrε0S / d</p>
+</blockquote>
+<p>ε0是真空介电常数，等于8.854187818 x 10-12 F/m<br>εr为平板电容器绝缘材料的相对介电常数，跟材料有关系，它没有量纲。εr越大，电容C越大<br>S为平行板正对面积。S越大，电容C越大<br>d为平行板之间的距离。d约大，电容C越小</p>
+<h1 id="第二部分：电容器与水桶的类比"><a href="#第二部分：电容器与水桶的类比" class="headerlink" title="第二部分：电容器与水桶的类比"></a>第二部分：电容器与水桶的类比</h1><hr>
+<p>电容器类比于水桶的概念，有助于快速理解电容器在电路中任一时刻电容C、电压U、电荷Q三者的关系。</p>
+<p>根据电容器电容C的定义式得到：</p>
+<blockquote>
+<p>电荷Q = 电容C * 电压U</p>
+</blockquote>
+<p>对于水桶：</p>
+<blockquote>
+<p>水的体积V = 底面积S * 水面高度H</p>
+</blockquote>
+<p>我们可以做以下类比：</p>
+<ul>
+<li>电容C大小类比于水桶的底面积S（两者都是造出来以后就固定了）。</li>
+<li>电容器两端的电压U类比于水面高度H（注意，是水面的高度，不是桶的高度，放水的多少不同，水面高度是有变化的）。</li>
+<li>电容器存储的电荷Q类比于水桶内水的体积V。</li>
+<li>电容器的极限耐压值Umax类比于水桶的高度Hmax。</li>
+</ul>
+<p>进一步来理解和验证以上的类比否合理：</p>
+<ul>
+<li>同样电荷Q向不同的电容器充电，电容C越大电容器，电压U越小。类比到水桶，同样体积的水V倒入不同的水桶里，底面积S越大的桶子，水面高度H越小。</li>
+<li>某一电容器，当有更多的电荷Q注入，电压U就会越来越高，直到达到电容器的极限耐压值Umax。类比到水桶，某一水桶，只有更多体积的水V倒入，水面高度H就会不断上升，直到达到水桶的高度Hmax。</li>
+<li><p>电容器可以容纳的最大电荷Qmax是指两端电压U达到极限耐压值时的值： Qmax = C * Umax<br>类比到水桶，一个水桶可以盛水的最大水的体积Vmax是指当水面高度H达到水桶高度时的值：Vmax= S * Hmax</p>
+</li>
+<li><p>平时我们说电容器充满了，是指在电容器两端的电压等于了外部电源电压，没有电势差之后，外部电源自然无法再向电容器充电。这时两者电压相同，C大的，所能存储的如果能进一步提高外部电压，电容器两端的电压U还可以继续升高直至极限耐压值Umax。类比到水桶，我们假设有两个水桶，两者底部是互通的。当水桶A（相当于电压源，也可以理解为电容器向电容器充电）的水面高度H比水桶B（相当于电容器）高时，水会从水桶A注入到水桶B中，直到两者的水面高度相同时停止。</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/10/11/电容器与水桶的类比/" itemprop="url">
                   电容器与水桶的类比
                 </a>
@@ -1161,7 +1296,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1201,7 +1336,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
