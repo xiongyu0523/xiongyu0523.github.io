@@ -653,6 +653,247 @@
             
               
                 
+                <a class="post-title-link" href="/2017/02/18/模块化你的printf打印信息/" itemprop="url">
+                  模块化你的printf打印信息
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-18T21:03:00+08:00" content="2017-02-18">
+              2017-02-18
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>处理器都会带有JTAG/SWD的调试端口进行侵入式的调试，但是在许多应用场景下这种方式仍是不太适合的。比如调试一个无线通讯系统，你希望捕获其中一些讯息但又无法停下来处理器来进行断点观察，因为一旦暂停则无法处理正在进行交互的信息而导致系统工作不正常。这种情况在代码中嵌入printf打印代码来调试最佳。</p>
+<p>但当软件成规模的时候，控制台会有一堆的打印log产生，可能会造成几个负面影响：</p>
+<ol>
+<li>影响代码体积</li>
+<li>影响性能</li>
+<li>难以找到需要关注的信息</li>
+</ol>
+<p>如果手动去禁止和打开log无疑是不可取的，那么有什么简单而有效的来管理这些log呢？以下代码提供了一个很好的解决方案。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">#include &lt;stdio.h&gt;</div><div class="line">#include &quot;debug_config.h&quot;</div><div class="line"></div><div class="line">#if defined (CFG_MODULE_x_DEBUG_EN) &amp;&amp; (CFG_MODULE_x_DEBUG_EN &gt; 0)</div><div class="line">#define MODULE_x_DEBUG    printf</div><div class="line">#else </div><div class="line">#define MODULE_x_DEBUG    1 ? (void) 0 : (void) printf</div><div class="line">#endif</div><div class="line"></div><div class="line">void func(void)</div><div class="line">&#123;</div><div class="line">    MODULE_x_DEBUG(&quot;Hey I&apos;m module x prompts\r\n&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面打印语句在<figure class="highlight plain"><figcaption><span>CFG_MODULE_x_DEBUG_EN    1```的时候等同于</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">```</div><div class="line">printf(&quot;Hey I&apos;m module x prompts\r\n&quot;);</div></pre></td></tr></table></figure></p>
+<p>而当<figure class="highlight plain"><figcaption><span>CFG_MODULE_x_DEBUG_EN    0```或者没有定义的时候等同于</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">```</div><div class="line">1 ? (void) 0 : (void)printf(&quot;Hey I&apos;m module x prompts\r\n&quot;);</div></pre></td></tr></table></figure></p>
+<p>这句话句在编译阶段就会C编译器优化并不会对代码体积或者运行速度有影响。</p>
+<p>通过这个方法在<code>debug_config.h&quot;</code>中对于多个<code>CFG_MODULE_x_DEBUG_EN</code>宏定义进行管理可以很好做到单独使能或者禁止各个模块的打印信息。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/02/18/I2C从机挂死分析和解决方法/" itemprop="url">
+                  I2C从机挂死分析和解决方法
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-18T20:50:00+08:00" content="2017-02-18">
+              2017-02-18
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>I2C几乎是嵌入系统中最为通用串行总线，MCU周边的各种器件只要对速度要求不高都可以使用。优点是兼容性好（几乎所有MCU都有I2C主机控制器，没有也可以用IO模拟），管脚占用少，芯片实现简单。I2C协议虽然简单，实际使用过程中小毛病还不少。今天先来看一个平日最为常见的问题：I2C从机挂死。</p>
+<blockquote>
+<p>很多事情不难而且经常碰到，每次自认为懂了但最终让你站出来说清楚的时候却总是不能自圆其说，很难受。所以我决定写博客的时候就想尽量把内容写清楚详细甚至是透彻，希望让每一个阅读博文的同学都能看得明明白白，学会一点小知识。如果还有不清楚的可以留言交流.</p>
+</blockquote>
+<h1 id="I2C规范与特性"><a href="#I2C规范与特性" class="headerlink" title="I2C规范与特性"></a>I2C规范与特性</h1><p>I2C是什么，我相信99%的同学能点到这篇博文对I2C也有了一定的了解，这里附上一份I2C鼻祖NXP （前Philips半导体）的一份权威手册：<a href="http://www.nxp.com/documents/user_manual/UM10204.pdf" target="_blank" rel="external">I2C-bus specification and user manual v.6</a></p>
+<p>描述一下I2C最重要的几个特性，为了后面描述问题和解决方案作一些铺垫。</p>
+<ol>
+<li>I2C是由两根线（时钟SCL + 数据SDA）组成的多主多从串行同步通信总线。</li>
+<li>规范要求接入I2C的器件，SCL时钟和SDA数据线都必须是双向开漏结构的，通过总线上的上拉电阻拉到逻辑高电平。这样的结构可以实现<strong>线与（&amp;）</strong>功能。</li>
+<li>一般情况下I2C的SDA只有在SCL为低电平的时候才能改变，为高电平的时候需要保持。对应到芯片设计上则是上升沿采样，下降沿变化。<br><img src="http://upload-images.jianshu.io/upload_images/3046528-0624df9347f37735.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></li>
+<li>两个例外情况由主机发出的总线起始条件START（SCL为高时SDA由高变低）和停止条件STOP（SCL为高时SDA由低变高）<br><img src="http://upload-images.jianshu.io/upload_images/3046528-b64f0614271c9b03.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></li>
+</ol>
+<h1 id="挂死-挂了-死机"><a href="#挂死-挂了-死机" class="headerlink" title="挂死 = 挂了 + 死机"></a>挂死 = 挂了 + 死机</h1><p>挂死这个词应该来源于英文<strong>hangs</strong> : <em>To cause (a computer system) to halt so that input devices, such as the keyboard or the mouse, do not function</em>.</p>
+<p>前面提到因为<strong>线与&amp;</strong>结构，是I2C总线设计上最关键的特征，用了这种结构才能实现</p>
+<ul>
+<li>多主机仲裁同步</li>
+<li>慢从机同步快主机</li>
+</ul>
+<p>因为这个特性，只要总线上任何一个器件拉低了SDA或者SCL，其他器件都无法拉高它们，看到的都是低电平。如果有器件不释放总线，则整个总线上的通讯都会被暂停，我们成为<strong>I2C bus hangs</strong>：I2C总线挂死</p>
+<p>因为I2C主机一般是可编程的器件，受我们控制，如果主机主动拉低了总线，我们可以通过调试代码了解原因，也可以很方便的通过复位I2C外设或者复位芯片来退出这种状态。而I2C从机往往不带RESET引脚，如果挂死了总线即使整个系统复位都无法解除，仅重新上下电才可以恢复。很多系统上是不可接受的，因此我们需要更加小心的处理I2C从机挂死的情况，下面分析也是针对I2C从机挂死来写的。</p>
+<h1 id="SDA挂死"><a href="#SDA挂死" class="headerlink" title="SDA挂死"></a>SDA挂死</h1><p>先来看下哪些情况下I2C从机会需要拉低SDA线。</p>
+<ol>
+<li>主机向从机写数据或地址时，从机如果发出ACK应答，则会第9个CLK的期间拉低SDA</li>
+<li>主机读数据的时候，从机会在bit为0时对应的CLK期间拉低SDA</li>
+</ol>
+<p>那什么情况I2C从机又可能钳住SDA线呢？我们先来看一个典型的I2C主机发起对某一器件地址读操作，读到的数据为10011000b，MSB在先也就是0x98。在图中地址字节第9个CLK期间从机拉低SDA表示对地址进行应答，在返回的数据字节的第2，3，6，7，8几个CLK器件从机拉低SDA输出逻辑0电平。<br><img src="http://upload-images.jianshu.io/upload_images/3046528-645a44a2cec7776e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>根据上面讲的I2C协议SCL为高的时候，SDA电平应保持，而等到SCL为低后（也就是下降沿后）才能发生改变。如果在上面几个CLK的前半个周期SCL拉高后主机不再拉低呢？从机会有什么动作？YES，从机会持续拉低着SDA，<strong>直到见到下一个他应该输出高电平</strong>的下降沿。</p>
+<p>最常见的情况就是主机在通讯的过程中产生了复位。由于复位动作通常会立刻执行，外设状态机都恢复到默认状态，也就发不出完整的CLK了。那么等到主机复位完成回来后，SCL为高，SDA被从机拉低。主机无法发起START起始条件，不能开始下一次与从机的通讯，这称为SDA挂死。</p>
+<p>要想办法恢复，我们先得知道从机什么时候会释放SDA。由于刚刚的SCL下降沿没有给出来，恢复总线要做的第一件事情就是在想办法用GPIO在SCL线上模拟一个下降沿，让从机状态机继续走下去。只发一个下降沿并不一定能将SDA释放，因为我们并不清楚当主机复位异常发生时刻从机到底处于图中哪一个状态，所以需要逐个CLK去探测，直到见到SDA被释放了，我们才终止并且发送STOP条件告诉从机这次坑爹的通讯结束了。</p>
+<blockquote>
+<p>网上通常的传授的方法是模拟9个连续的CLK，但是我更喜欢上面的方法，一是速度快，二是具备可确定性。发送9个CLK我主要担心从机在最后一个CLK时又拉低了SDA，还是需要用到上面的方法来释放。</p>
+</blockquote>
+<p>通过模拟几种情形来实际体会一下（从机对SDA的操作红色表示）：</p>
+<p>如果在地址字节第9个CLK拉高后主机复位。在模拟的第一个时钟低电平期间就可以看到SDA的释放，随后主机先拉低SDA，再模拟一个STOP结束条件。<br><img src="http://upload-images.jianshu.io/upload_images/3046528-7393dc710a5f0485.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>在数据字节第2个CLK拉高后主机复位，在第二个模拟的时钟低电平期间才看到SDA释放<br><img src="http://upload-images.jianshu.io/upload_images/3046528-eb748e8b3da30fe1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>在数据字节第6个CLK拉高后主机复位，在第三个模拟的时钟低电平期间才看到SDA释放<br><img src="http://upload-images.jianshu.io/upload_images/3046528-0e48bf7ffa7bb3f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<p>通过以上三种情况的分析，想必你已经非常清楚改如何处理了，最后附上一个程序处理流程图：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3046528-f8fdebd61136b91b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+<h1 id="SCL挂死"><a href="#SCL挂死" class="headerlink" title="SCL挂死"></a>SCL挂死</h1><p>I2C从机主动拉低SCL线在规范中是一个合法的行为，称之为Clock Stretching（时钟扩展，我一般叫他时钟同步）。通常是主机请求数据（ 收或者发）后从机需要一些时间处理，且没有多余Buffer可以接收接或者提供接下来的数据的时候从机则会拉低SCL<strong>一段时间</strong>直到有新的数据准备好。</p>
+<p>SCL挂死（也就是前面所说一直拉低SCL）这种情况在标准I2C从器件上基本不会出现，因为只要芯片还在正常工作buffer总算有准备好的时候，自然就就释放SCL了。往往是使用用户使用MCU作为I2C从机时，程序设计上的问题导致MCU无法读取&amp;填充buffer而导致，重点分析MCU I2C中断服务程序。</p>
+<ol>
+<li>I2C中断服务程序被意外屏蔽</li>
+<li>中断服务程序中陷入了一些标志位查询的<code>while(flag != xxx)</code>死循环</li>
+<li>I2C功能系统被意外禁止</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2017/02/06/树莓派3B+ Raspbian桌面分辨率设置/" itemprop="url">
                   树莓派3B+ Raspbian桌面分辨率设置
                 </a>
@@ -1566,7 +1807,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
