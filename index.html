@@ -294,7 +294,55 @@
           
             <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>很久没有更新技术博客了。最近一年都在做低功耗蓝牙和物联网等相关的事情，想把一些经验和心得写成博客分享出来，也算对自己工作的一种总结。开一个系列讲解NXP的低功耗蓝牙SDK开发的方方面面，目前NXP官方仅有一个英文版的《BLE Application Developer Guide》介绍SDK的使用，对于国内开发者来说不太友好。希望这个系列文章能作为官方文档的补充，帮助到正在使用和将要使用NXP蓝牙的芯片的朋友们。</p>
 <p>weil家深入这个通用的低功耗蓝牙SDK与协议栈，迅速掌握NXP低功耗蓝牙的开发。假设用户已经具备了基本的BLE概念，如Profile、GAP、GATT、HCI、LL等各个层次的职责，广播与连接的行为，基于GATT数据传输的方式等。如果读者对这个概念还不熟悉，可以阅读《Getting Started with Bluetooth Low Energy》一书的第1至3章共75页内容，利用业余时间在2-3天内可以轻松完成。</p>
-<h1 id="NXP-BLE-SoC概况"><a href="#NXP-BLE-SoC概况" class="headerlink" title="NXP BLE SoC概况"></a>NXP BLE SoC概况</h1><p>目前NXP面向物联网和可穿戴设备数据传输应用的BLE SoC芯片要有QN和KW两大系列（型号特点见下表），除了QN902x使用原Quintic自带的协议栈SDK外，其他几个型号都采用了NXP MCUXpresso SDK和NXP自研的Bluetooth协议栈，呈现给用户的编程接口完全一致。无论是开发超低功耗的QN9080，支持Zigbee/Thread/BLE多模的KW41，还是面向汽车应用的KW36，对固件工程师来说，掌握了一款芯片的开发，拿下其他的也就是轻而易举之事。<br>型号| 协议版本| 内核频率 | 存储器资源 | 特色<br>———-|—————|—–|—————|—–<br><strong>QN902x</strong>   | BLE 4.2| Cortex-M0 @32MHz | 128KB Flash / 64KB RAM / 128KB ROM | 低成本<br><strong>QN908x</strong>   | BLE 5.0 | Cortex-M4F @32MHz |  512KB Flash / 128KB RAM | 超低功耗<br><strong>KW41</strong>   | BLE 4.2 | Cortex-M0+ @48MHz | 512KB Flash / 128KB RAM | 多模多协议<br><strong>KW36</strong>   | BLE 5.0 | Cortex-M0+ @48MHz | 512KB Flash / 64KB RAM | 汽车网络<br><strong>K32W</strong> | BLE 5.0 | Cortex-M4F &amp; Cortex-M0+ @72MHz | 1.25MB Flash / 384KB RAM | 单芯片高集成度</p>
+<h1 id="NXP-BLE-SoC概况"><a href="#NXP-BLE-SoC概况" class="headerlink" title="NXP BLE SoC概况"></a>NXP BLE SoC概况</h1><p>目前NXP面向物联网和可穿戴设备数据传输应用的BLE SoC芯片要有QN和KW两大系列（型号特点见下表），除了QN902x使用原Quintic自带的协议栈SDK外，其他几个型号都采用了NXP MCUXpresso SDK和NXP自研的Bluetooth协议栈，呈现给用户的编程接口完全一致。无论是开发超低功耗的QN9080，支持Zigbee/Thread/BLE多模的KW41，还是面向汽车应用的KW36，对固件工程师来说，掌握了一款芯片的开发，拿下其他的也就是轻而易举之事。</p>
+<table>
+<thead>
+<tr>
+<th>型号</th>
+<th>协议版本</th>
+<th>内核频率</th>
+<th>存储器资源</th>
+<th>特色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>QN902x</strong></td>
+<td>BLE 4.2</td>
+<td>Cortex-M0 @32MHz</td>
+<td>128KB Flash / 64KB RAM / 128KB ROM</td>
+<td>低成本</td>
+</tr>
+<tr>
+<td><strong>QN908x</strong></td>
+<td>BLE 5.0</td>
+<td>Cortex-M4F @32MHz</td>
+<td>512KB Flash / 128KB RAM</td>
+<td>超低功耗</td>
+</tr>
+<tr>
+<td><strong>KW41</strong></td>
+<td>BLE 4.2</td>
+<td>Cortex-M0+ @48MHz</td>
+<td>512KB Flash / 128KB RAM</td>
+<td>多模多协议</td>
+</tr>
+<tr>
+<td><strong>KW36</strong></td>
+<td>BLE 5.0</td>
+<td>Cortex-M0+ @48MHz</td>
+<td>512KB Flash / 64KB RAM</td>
+<td>汽车网络</td>
+</tr>
+<tr>
+<td><strong>K32W</strong></td>
+<td>BLE 5.0</td>
+<td>Cortex-M4F &amp; Cortex-M0+ @72MHz</td>
+<td>1.25MB Flash / 384KB RAM</td>
+<td>单芯片高集成度</td>
+</tr>
+</tbody>
+</table>
 <h1 id="MCUXpresso-SDK与NXP-BLE协议栈"><a href="#MCUXpresso-SDK与NXP-BLE协议栈" class="headerlink" title="MCUXpresso SDK与NXP BLE协议栈"></a>MCUXpresso SDK与NXP BLE协议栈</h1><p>MCUXpresso SDK是NXP面向MCU市场推出的一套完整的软件开发套件，支持Kinetis, LPC, i.MX RT等通用微控制器以及QN和JN系列的无线连接微控制器。一个SDK包内包含了芯片硬件抽象层，外设驱动库，多个中间件库（根据芯片功能的不同包含不同的中间件，比如带Ethernet外设的MCU则会有lwip网络协议栈中间件），以及丰富的示例代码。</p>
 <p>对于低功耗蓝牙MCU，它的BLE协议栈作为MCUXpresso SDK的一个中间件而存在。在用户解压缩SDK包后，在./middleware/wireless/bluetooth_x.y.z下可以找到协议栈的代码和库文件。低功耗蓝牙应用将包含这个目录下的文件，以使用协议栈提供的API和服务。所有低功耗蓝牙的示例代码可以再./boards/<specific board="">/wireless_examples/bluetooth目录下找到。同时，低功耗蓝牙应用与通用MCU SDK还有一点差异，它需要一些额外的通用组件作为支撑，如OS环境抽象、非易失存储、队列管理，低功耗管理等，因此多引入了一个connectivity framework的中间件层。在./middleware/wireless/framework_x.y.z下可以找到framework包含的所有功能模块源代码。下图展示了SDK的文件结构中与低功耗蓝牙相关的目录。</specific></p>
 <p><img src="https://upload-images.jianshu.io/upload_images/3046528-12d71b1b39f7c434.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="MCUXpresso SDK文件目录组织"></p>
